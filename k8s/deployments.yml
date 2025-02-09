@@ -1,0 +1,84 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: streamlit-blue
+  labels:
+    app: streamlit
+    version: blue
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: streamlit
+      version: blue
+  template:
+    metadata:
+      labels:
+        app: streamlit
+        version: blue
+    spec:
+      containers:
+      - name: streamlit
+        image: ${DOCKER_REGISTRY}/streamlit-app:blue
+        ports:
+        - containerPort: 8501
+        env:
+        - name: STREAMLIT_SERVER_PORT
+          value: "8501"
+        - name: STREAMLIT_SERVER_ADDRESS
+          value: "0.0.0.0"
+        readinessProbe:
+          httpGet:
+            path: /_stcore/health
+            port: 8501
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /_stcore/health
+            port: 8501
+          initialDelaySeconds: 15
+          periodSeconds: 20
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: streamlit-green
+  labels:
+    app: streamlit
+    version: green
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: streamlit
+      version: green
+  template:
+    metadata:
+      labels:
+        app: streamlit
+        version: green
+    spec:
+      containers:
+      - name: streamlit
+        image: ${DOCKER_REGISTRY}/streamlit-app:green
+        ports:
+        - containerPort: 8501
+        env:
+        - name: STREAMLIT_SERVER_PORT
+          value: "8501"
+        - name: STREAMLIT_SERVER_ADDRESS
+          value: "0.0.0.0"
+        readinessProbe:
+          httpGet:
+            path: /_stcore/health
+            port: 8501
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /_stcore/health
+            port: 8501
+          initialDelaySeconds: 15
+          periodSeconds: 20

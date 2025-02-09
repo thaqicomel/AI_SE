@@ -1,0 +1,49 @@
+#!/bin/bash
+
+# Get the current version
+CURRENT_VERSION=$(kubectl get service streamlit-service -o jsonpath='{.spec.selector.version}')
+
+# Determine the new version
+if [ "$CURRENT_VERSION" == "blue" ]; then
+    NEW_VERSION="green"
+    OLD_VERSION="blue"
+else
+    NEW_VERSION="blue"
+    OLD_VERSION="green"
+fi
+
+echo "Current version: $CURRENT_VERSION"
+echo "New version: $NEW_VERSION"
+
+# Update the deployment with new image
+kubectl set image deployment/streamlit-$NEW_VERSION \
+    streamlit=${DOCKER_REGISTRY}/streamlit-app:${NEW_VERSION}
+
+# Wait for the new deployment to be ready
+echo "Waiting for new deployment to be ready..."
+kubectl rollout status deployment/streamlit-$NEW_VERSION
+
+# Check if deployment is healthy
+READY=$(kubectl get deployment streamlit-$NEW_VERSION -o jsonpath='{.status.readyReplicas}')
+DESIRED=$(kubectl get deployment streamlit-$NEW_VERSION -o jsonpath='{.spec.replicas}')
+
+if [ "$READY" == "$DESIRED" ]; then
+    echo "New deployment is healthy. Switching traffic..."
+    
+    # Switch the service selector to the new version
+    kubectl patch service streamlit-service -p "{\"spec\":{\"selector\":{\"version\":\"$NEW_VERSION\"}}}"
+    
+    echo "Traffic switched to $NEW_VERSION version"
+    
+    # Optional: Scale down old version
+    read -p "Do you want to scale down the old version? (y/n) " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        kubectl scale deployment streamlit-$OLD_VERSION --replicas=0
+        echo "Scaled down $OLD_VERSION version"
+    fi
+else
+    echo "New deployment is not healthy! Rolling back..."
+    kubectl rollout undo deployment/streamlit-$NEW_VERSION
+    exit 1
+fi
