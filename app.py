@@ -8,7 +8,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 from model_utils import CrossValidationEvaluator
 
-# Set page config
+# Set page config1
 st.set_page_config(
     page_title="Cervical Cancer Prediction",
     layout="wide",
