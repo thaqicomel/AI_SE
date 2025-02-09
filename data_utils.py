@@ -249,7 +249,7 @@ def preprocess_data(df, target_col='Biopsy', imputation_method='xgboost', **kwar
     X_balanced, y_balanced = smote.fit_resample(X_scaled_df, y)
     
     return X_balanced, y_balanced, scaler, imputer
-
+#data cleaning
 def split_data(X, y, train_percentage, random_state=42):
     """Split data into training and testing sets"""
     if not 0 < train_percentage < 1:
