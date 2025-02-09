@@ -10,6 +10,7 @@ from sklearn.ensemble import RandomForestRegressor
 import xgboost as xgb
 import lightgbm as lgb
 
+#load
 def load_data(file_path):
     """Load and perform initial data preprocessing"""
     try:
@@ -190,7 +191,7 @@ class DataImputer:
             prev_matrix = filled_matrix.copy()
         
         return pd.DataFrame(filled_matrix, columns=X.columns), None
-
+#preprocess data
 def preprocess_data(df, target_col='Biopsy', imputation_method='xgboost', **kwargs):
     """Improved preprocessing with enhanced imputation and SMOTE balancing"""
     X = df.drop(target_col, axis=1)
@@ -248,7 +249,7 @@ def preprocess_data(df, target_col='Biopsy', imputation_method='xgboost', **kwar
     X_balanced, y_balanced = smote.fit_resample(X_scaled_df, y)
     
     return X_balanced, y_balanced, scaler, imputer
-
+#data cleaning
 def split_data(X, y, train_percentage, random_state=42):
     """Split data into training and testing sets"""
     if not 0 < train_percentage < 1:
