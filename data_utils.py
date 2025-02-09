@@ -191,7 +191,7 @@ class DataImputer:
             prev_matrix = filled_matrix.copy()
         
         return pd.DataFrame(filled_matrix, columns=X.columns), None
-
+#preprocess data
 def preprocess_data(df, target_col='Biopsy', imputation_method='xgboost', **kwargs):
     """Improved preprocessing with enhanced imputation and SMOTE balancing"""
     X = df.drop(target_col, axis=1)
