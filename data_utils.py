@@ -10,6 +10,7 @@ from sklearn.ensemble import RandomForestRegressor
 import xgboost as xgb
 import lightgbm as lgb
 
+#load
 def load_data(file_path):
     """Load and perform initial data preprocessing"""
     try:
